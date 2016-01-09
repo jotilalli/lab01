@@ -12,43 +12,31 @@
         if (isset($_GET['board'])) {
 
             $position = $_GET['board'];
-
-
-
-
-            //ERROR CHECKING: Making sure that the length of URL is 9
-            if (strlen($position) != 9) {
-                echo "Error: <br /> Enter only 9 values in the URL <br /><br /> i.e. /?board=-xx-oo-xx-";
-            } else {
-
-
-                $game = new Game($position);
-                if ($game->winner('x')) {
-                    echo'You Win. Lucky Guesses!';
-                } else if ($game->winner('o')) {
-                    echo'I win. MUAHAHAHA';
-                } else
-                    echo'No winner yet, but you are losing.';
-            }
-
-            // for ($x = 0; $x < 9; $x++) {
-            //     echo $squares[$x];
-            //     if (($x + 1) % 3 == 0) {
-            //         echo '<br />';
-            //     }
-            // }
-            //if (winner('x', $squares)) {
-            //    echo ' WooHoo! X wins.';
-            //} else if (winner('o', $squares)) {
-            //    echo 'Yippy! O wins.';
-            //} else {
-            //    echo 'Awwwee! No winner yet.';
-            //}
         }
-
         //Parameter check error message
         else
-            echo 'Error: <br /> add "  /?board=---------  " at the end of your URL link';
+            $game = new Game('---------');
+
+//ERROR CHECKING: Making sure that the length of URL is 9
+        if (strlen($position) != 9) {
+            echo "Error: <br /> Enter only 9 values in the URL <br /><br /> i.e. /?board=-xx-oo-xx-";
+        } else {
+
+
+            $game = new Game($position);
+
+            //INVOKING METHODS
+            $game->pick_move();     //calling the pick_move method
+            $game->display();       //calling the display method
+
+
+            if ($game->winner('x')) {
+                echo'iWin. ';
+            } else if ($game->winner('o')) {
+                echo'You win. ';
+            } else
+                echo'No winner yet, but you are losing.';
+        }
         ?>
 
     </body>
@@ -62,6 +50,54 @@ class Game {
 
     function __construct($squares) {
         $this->position = str_split($squares);
+    }
+
+    //function to create cell for the board
+    function show_cell($which) {
+
+        $token = $this->position[$which];
+
+        //deal with the easy case
+        if ($token <> '-')
+            return '<td>' . $token . '</td>';
+
+
+        //now the hard case
+        $this->new_position = $this->position;       // copy the original
+        $this->new_position[$which] = 'o';           // this would be their move
+        $move = implode($this->newposition);        // make a string from the board array
+        $link = '?board=' . $move;                     // this is what we want the link to be
+        // so return a cell containing an anchor and showing a hyphen
+
+        return '<td><a href="' . $link . '">-</a></td>';
+    }
+
+    function pick_move() {
+
+        //for loop iterates through the entire board
+        for ($cell = 0; $cell < 8; $cell++) {
+
+            //if this the cell is a dash put an X in it
+            if ($this->position[$cell] == '-') {
+
+                //place X in the following cell
+                $this->position[$cell] = 'x';
+                break;
+            }
+        }
+    }
+
+    //function to display the board
+    function display() {
+        echo'<table cols="3" style="font-size:large; font-weight:bold">';
+        echo'<tr>'; //first row
+        for ($pos = 0; $pos < 9; $pos++) {
+            echo $this->show_cell($pos);
+            if ($pos % 3 == 2)
+                echo '</tr><tr>'; //next square is in a new row
+        }
+        echo'</tr>';
+        echo'</table>';
     }
 
     function winner($token) {
