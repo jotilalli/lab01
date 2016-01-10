@@ -13,6 +13,7 @@
 
             $position = $_GET['board'];
         }
+        
         //Parameter check error message
         else
             $game = new Game('---------');
@@ -22,14 +23,14 @@
             echo "Error: <br /> Enter only 9 values in the URL <br /><br /> i.e. /?board=-xx-oo-xx-";
         } else {
 
-
+        
             $game = new Game($position);
 
             //INVOKING METHODS
             $game->pick_move();     //calling the pick_move method
             $game->display();       //calling the display method
 
-
+            //winning statements
             if ($game->winner('x')) {
                 echo'iWin. ';
             } else if ($game->winner('o')) {
@@ -48,6 +49,7 @@ class Game {
 
     var $position;
 
+    
     function __construct($squares) {
         $this->position = str_split($squares);
     }
@@ -57,18 +59,18 @@ class Game {
 
         $token = $this->position[$which];
 
-        //deal with the easy case
+        //if the cell is not a dash - place the token in it
         if ($token <> '-')
             return '<td>' . $token . '</td>';
 
 
         //now the hard case
-        $this->new_position = $this->position;       // copy the original
-        $this->new_position[$which] = 'o';           // this would be their move
+        $this->new_position = $this->position;      // copy the original
+        $this->new_position[$which] = 'o';          // this would be their move
         $move = implode($this->newposition);        // make a string from the board array
-        $link = '?board=' . $move;                     // this is what we want the link to be
-        // so return a cell containing an anchor and showing a hyphen
+        $link = '?board=' . $move;                  // this is what we want the link to be
 
+        // so return a cell containing an anchor and showing a hyphen
         return '<td><a href="' . $link . '">-</a></td>';
     }
 
@@ -111,12 +113,9 @@ class Game {
             //check column from 0-3
             for ($col = 0; $col < 3; $col++) {
 
-                //echo "row check for token " . $token . ": " . ($row + 1) . "," . ($col + 1) . " position: " . (3 * $row + $col);
-
                 if ($this->position[3 * $row + $col] != $token) {
                     $won = false;
                 }
-                // echo " result: " . $won . "<br/>";
             }
             if ($won) {
                 return $won;
@@ -133,13 +132,10 @@ class Game {
             //check row from 0-3
             for ($row = 0; $row < 3; $row++) {
 
-                //echo "col check for token " . $token . ": " . ($col + 1) . "," . ($row + 1) . " position: " . (3 * $row + $col);
-
                 if ($this->position[3 * $row + $col] != $token) {
                     $won = false;
                 }
 
-                //echo " result: " . $won . "<br/>";
             }
             if ($won) {
                 return $won;
